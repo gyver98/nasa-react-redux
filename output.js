@@ -67,7 +67,7 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-document.write("hello webpack");
+document.write("hello webpack : watching for changes now");
 
 /***/ })
 /******/ ]);
