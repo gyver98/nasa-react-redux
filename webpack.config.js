@@ -10,6 +10,12 @@ let config = {
     path: path.resolve(__dirname, './public'),
     filename: 'output.js'
   },
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.scss', '.css', '.jpeg', '.jpg', '.gif', '.png'], // Automatically resolve certain extensions
+    alias: {
+      images: path.resolve(__dirname, 'src/assets/images')  // src/assets/images alias
+    }
+  },
   module: {
     rules: [
       {
@@ -19,10 +25,38 @@ let config = {
       },
       {
         test: /\.scss$/, // files ending with .scss
-        use: ExtractTextWebpackPlugin.extract({ // call our plugin with extract method
-          use: ['css-loader', 'sass-loader'], // use these loaders
+        use: ['css-hot-loader'].concat(ExtractTextWebpackPlugin.extract({ // call our plugin with extract method
+          use: ['css-loader', 'sass-loader', 'postcss-loader'], // use these loaders
           fallback: 'style-loader' // fallback for any CSS not extracted
-        }) // end extract
+        })) // end extract
+      },
+      {
+        test: /\.jsx$/, // all files ending with .jsx
+        loader: 'babel-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: ['file-loader?context=src/assets/images/&name=images/[path][name].[ext]', {  // images loader
+          loader: 'image-webpack-loader',
+          query: {
+            mozjpeg: {
+              progressive: true,
+            },
+            gifsicle: {
+              interlaced: false,
+            },
+            optipng: {
+              optimizationLevel: 4,
+            },
+            pngquant: {
+              quality: '75-90',
+              speed: 3,
+            },
+          },
+        }],
+        exclude: /node_modules/,
+        include: __dirname, 
       }
     ] // end rules
   },
